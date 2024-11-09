@@ -1,9 +1,9 @@
-'use client'
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import QrScanner from 'qr-scanner';
-import smapleQrImage from '../../../public/sampleQR.png';
-import Image from 'next/image';
-import toast from 'react-hot-toast';
+"use client";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import QrScanner from "qr-scanner";
+import smapleQrImage from "../../../public/sampleQR.png";
+import Image from "next/image";
+import toast from "react-hot-toast";
 
 interface ScannedData {
   name: string;
@@ -27,11 +27,11 @@ const QRScanner: React.FC = () => {
     try {
       newResult = JSON.parse(result.data);
       if (!newResult.name || !newResult.rollNo || !newResult.class) {
-        toast.error('Invalid QR format');
+        toast.error("Invalid QR format");
         return;
       }
     } catch {
-      toast.error('Invalid QR code format. Please scan a valid QR code.');
+      toast.error("Invalid QR code format. Please scan a valid QR code.");
       return;
     }
 
@@ -88,24 +88,40 @@ const QRScanner: React.FC = () => {
 
   useEffect(() => {
     if (!qrOn) {
-      alert("Camera is blocked or not accessible. Please allow camera in your browser permissions and reload.");
+      alert(
+        "Camera is blocked or not accessible. Please allow camera in your browser permissions and reload."
+      );
     }
   }, [qrOn]);
 
   console.log("scannedResult =", scannedResult);
 
   return (
-    <div className="relative sm:w-[100vw] flex flex-col items-center
-     lg:w-[50%] mx-auto justify-center h-screen bg-gray-400">
+    <div
+      className="relative sm:w-[100vw] flex flex-col items-center
+     lg:w-[50%] mx-auto justify-center h-screen bg-gray-400"
+    >
       {/* QR Video Element */}
       {startScan && (
         <video
           ref={videoEl}
-          className="w-full max-w-md h-[50%] rounded-lg shadow-lg border-2 border-red-600"
+          className="
+         w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] 
+         2xl:max-w-[500px] 2xl:max-h-[500px]
+         xl:max-w-[400px] xl:max-h-[400px]
+         lg:max-w-[300px] lg:max-h-[300px]
+         md:max-w-[250px] md:max-h-[250px]
+         sm:max-w-[100vw] sm:max-h-[70vh]
+         esm:max-w-[150px] esm:max-h-[150px]
+         object-cover rounded-lg shadow-lg border-dashed border-red-600
+       "
         />
       )}
 
-      <div ref={qrBoxEl} className="w-64 h-64 border-4 border-dashed border-yellow-500">
+      <div
+        ref={qrBoxEl}
+        className="w-64 h-64 border-4 border-dashed border-yellow-500"
+      >
         {!videoEl.current && !startScan && (
           <Image
             src={smapleQrImage}
@@ -118,24 +134,10 @@ const QRScanner: React.FC = () => {
       </div>
 
       {/* {scannedResult && startScan && ( */}
-        <h3>Number of Scanned Results: {scannedResult.length}</h3>
+      <h3>Number of Scanned Results: {scannedResult.length}</h3>
       {/* )} */}
 
       {/* Display Scanned Result */}
-      {/* {scannedResult.length > 0 && !startScan && (
-        <div className="top-0 left-0 p-2 bg-gray-800 text-white text-lg border-2 border-red-600 rounded-md shadow-md">
-          <h3>Number of Scanned Results: {scannedResult.length}</h3>
-          <ul>
-            {scannedResult.map((result, index) => (
-              <li key={index}>
-                <strong>Name:</strong> {result.name} <br />
-                <strong>Roll No:</strong> {result.rollNo} <br />
-                <strong>Class:</strong> {result.class}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )} */}
 
       {/* Button to toggle scanning */}
       <button
