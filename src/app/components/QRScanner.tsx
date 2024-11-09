@@ -106,7 +106,7 @@ const QRScanner: React.FC = () => {
         <video
           ref={videoEl}
           className="
-         w-[50vw] h-[70vw]
+         sm:w-[100vw] w-[50vw] h-[70vw]
          sm:max-w-[100vw] sm:max-h-[70vh]
          object-cover rounded-lg shadow-lg border-dashed border-red-600
        "
