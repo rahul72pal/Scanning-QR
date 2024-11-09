@@ -95,7 +95,8 @@ const QRScanner: React.FC = () => {
   console.log("scannedResult =", scannedResult);
 
   return (
-    <div className="relative flex flex-col items-center w-[50%] mx-auto justify-center h-screen bg-gray-400">
+    <div className="relative sm:w-[100vw] flex flex-col items-center
+     lg:w-[50%] mx-auto justify-center h-screen bg-gray-400">
       {/* QR Video Element */}
       {startScan && (
         <video
@@ -109,15 +110,19 @@ const QRScanner: React.FC = () => {
           <Image
             src={smapleQrImage}
             alt="QR Frame"
-            className="w-full h-full object-cover opacity-50"
+            className="w-full h-full object-cover opacity-70"
             width={356} // Define the width
             height={356} // Define the height
           />
         )}
       </div>
 
+      {/* {scannedResult && startScan && ( */}
+        <h3>Number of Scanned Results: {scannedResult.length}</h3>
+      {/* )} */}
+
       {/* Display Scanned Result */}
-      {scannedResult.length > 0 && !startScan && (
+      {/* {scannedResult.length > 0 && !startScan && (
         <div className="top-0 left-0 p-2 bg-gray-800 text-white text-lg border-2 border-red-600 rounded-md shadow-md">
           <h3>Number of Scanned Results: {scannedResult.length}</h3>
           <ul>
@@ -130,11 +135,11 @@ const QRScanner: React.FC = () => {
             ))}
           </ul>
         </div>
-      )}
+      )} */}
 
       {/* Button to toggle scanning */}
       <button
-        className="w-64 h-64 mt-4 p-4 bg-blue-500 text-white rounded-md"
+        className="px-8 mt-4 py-4 bg-blue-500 text-white rounded-md"
         onClick={() => setStartScan(!startScan)}
       >
         {startScan ? "Stop Scanning" : "Start Scanning"}
