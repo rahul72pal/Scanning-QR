@@ -1,60 +1,55 @@
-'use client';
-import React, { useEffect, useRef, useState } from 'react';
+'use client'
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import QrScanner from 'qr-scanner';
 import smapleQrImage from '../../../public/sampleQR.png';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
+
+interface ScannedData {
+  name: string;
+  rollNo: string;
+  class: string;
+}
 
 const QRScanner: React.FC = () => {
   const scanner = useRef<QrScanner>();
   const videoEl = useRef<HTMLVideoElement>(null);
   const qrBoxEl = useRef<HTMLDivElement>(null);
   const [qrOn, setQrOn] = useState<boolean>(true);
-  const [scannedResult, setScannedResult] = useState<any[]>([]); // Store parsed JSON data
+  const [scannedResult, setScannedResult] = useState<ScannedData[]>([]);
   const [startScan, setStartScan] = useState(false);
-  const [lastScanTime, setLastScanTime] = useState<number>(0); // Track the last scan time
-  const scannedRollNumbers = useRef<Set<string>>(new Set()); // Track scanned roll numbers to prevent duplicates
+  const scannedRollNumbers = useRef<Set<string>>(new Set());
 
-  const DEBOUNCE_TIME = 2000; // 2 second debounce time to slow down scanning
-
-  // Handle successful scan with debouncing to prevent duplicate entries and fast scans
-  const onScanSuccess = (result: QrScanner.ScanResult) => {
+  // Continuous scanning without debouncing in `onScanSuccess`
+  const onScanSuccess = useCallback((result: QrScanner.ScanResult) => {
     let newResult;
 
     try {
-      // Parse the QR data into a JSON object
       newResult = JSON.parse(result.data);
-
-      // Check if the necessary fields exist in the parsed object
       if (!newResult.name || !newResult.rollNo || !newResult.class) {
         toast.error('Invalid QR format');
+        return;
       }
-    } catch (error) {
+    } catch {
       toast.error('Invalid QR code format. Please scan a valid QR code.');
       return;
     }
 
-    const newRollNo = newResult.rollNo;  // Adjusted based on the new object structure
+    const newRollNo = newResult.rollNo;
 
-    // Check if enough time has passed to process the next scan
-    const currentTime = Date.now();
-    if (currentTime - lastScanTime > DEBOUNCE_TIME) {
-      // Check if this roll number has already been scanned
-      if (!scannedRollNumbers.current.has(newRollNo)) {
-        console.log("New QR Code scanned:", newResult);
-        
-        // Add the roll number to the set to prevent future duplicates
-        scannedRollNumbers.current.add(newRollNo);
+    // Prevent duplicate roll numbers
+    if (!scannedRollNumbers.current.has(newRollNo)) {
+      console.log("New QR Code scanned:", newResult);
 
-        // Add the new result to the scanned results array
-        setScannedResult((prev) => [...prev, newResult]);
+      // Add the roll number to the set to prevent future duplicates
+      scannedRollNumbers.current.add(newRollNo);
 
-        // Update the last scan time
-        setLastScanTime(currentTime);
-        toast.success("QR Code Scanned!");
-      }
+      // Add the new result to the scanned results array
+      setScannedResult((prev) => [...prev, newResult]);
+
+      toast.success("QR Code Scanned!");
     }
-  };
+  }, []);
 
   const onScanFail = (err: string | Error) => {
     console.log(err);
@@ -63,7 +58,7 @@ const QRScanner: React.FC = () => {
   // Effect to manage scanner start and stop
   useEffect(() => {
     if (startScan && videoEl.current) {
-      // Re-initialize the scanner when starting
+      // Initialize the scanner only once when starting
       scanner.current = new QrScanner(videoEl.current, onScanSuccess, {
         onDecodeError: onScanFail,
         preferredCamera: "environment",
@@ -89,7 +84,7 @@ const QRScanner: React.FC = () => {
       // Stop the scanner when not scanning
       scanner.current?.stop();
     }
-  }, [startScan]); // Trigger this effect when startScan changes
+  }, [startScan, onScanSuccess]); // `onScanSuccess` is still included as a dependency
 
   useEffect(() => {
     if (!qrOn) {
